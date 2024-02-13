@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 import {
   Results,
   Hands,
   HAND_CONNECTIONS,
   VERSION,
   NormalizedLandmarkListList,
-} from '@mediapipe/hands';
+} from "@mediapipe/hands";
 import {
   drawConnectors,
   drawLandmarks,
   Data,
   lerp,
-} from '@mediapipe/drawing_utils';
-import './index.scss';
-import { SlapGame } from '../../helper/slap';
-import meImg from '../../assets/images/me.png';
-import { useSearchParams } from 'react-router-dom';
+} from "@mediapipe/drawing_utils";
+import "./index.scss";
+import { SlapGame } from "../../helper/slap";
+import meImg from "../../assets/images/me.png";
+import { useSearchParams } from "react-router-dom";
 
 const SlapContainer = () => {
   const [searchParams] = useSearchParams();
@@ -30,13 +30,13 @@ const SlapContainer = () => {
   const [status, setStatus] = useState(false);
   const [faceNum, setFaceNum] = useState(gameState.current.maxActiveCells);
   const [cellImgSrc, setCellImgSrc] = useState(
-    'https://www.nicepng.com/png/full/183-1834697_donald-duck-png-donald-duck-small-face.png'
+    "https://www.nicepng.com/png/full/183-1834697_donald-duck-png-donald-duck-small-face.png",
   );
 
   useEffect(() => {
     console.log(searchParams);
-    const t = searchParams.get('t');
-    if (t === 'm') {
+    const t = searchParams.get("t");
+    if (t === "m") {
       setCellImgSrc(meImg);
     }
   }, [searchParams]);
@@ -46,12 +46,13 @@ const SlapContainer = () => {
       return;
     }
     if (inputVideoRef.current && canvasRef.current) {
-      console.log('rendering');
-      contextRef.current = canvasRef.current.getContext('2d');
+      console.log("rendering");
+      contextRef.current = canvasRef.current.getContext("2d");
       const constraints = {
         video: {
-          width: { min: window.innerWidth },
-          height: { min: window.innerHeight },
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
+          facingMode: "environment", // or "user" for front camera
         },
       };
       navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
@@ -104,14 +105,14 @@ const SlapContainer = () => {
         0,
         0,
         canvasRef.current.width,
-        canvasRef.current.height
+        canvasRef.current.height,
       );
       contextRef.current.drawImage(
         results.image,
         0,
         0,
         canvasRef.current.width,
-        canvasRef.current.height
+        canvasRef.current.height,
       );
 
       drawGame(results.multiHandLandmarks);
@@ -123,14 +124,14 @@ const SlapContainer = () => {
           index++
         ) {
           const classification = results.multiHandedness[index];
-          const isRightHand = classification.label === 'Right';
+          const isRightHand = classification.label === "Right";
           const landmarks = results.multiHandLandmarks[index];
           drawConnectors(contextRef.current, landmarks, HAND_CONNECTIONS, {
-            color: isRightHand ? '#00FF00' : '#FF0000',
+            color: isRightHand ? "#00FF00" : "#FF0000",
           });
           drawLandmarks(contextRef.current, landmarks, {
-            color: isRightHand ? '#00FF00' : '#FF0000',
-            fillColor: isRightHand ? '#FF0000' : '#00FF00',
+            color: isRightHand ? "#00FF00" : "#FF0000",
+            fillColor: isRightHand ? "#FF0000" : "#00FF00",
             radius: (data: Data) => {
               return lerp(data.from!.z!, -0.15, 0.1, 10, 1);
             },
@@ -169,11 +170,11 @@ const SlapContainer = () => {
                 gameState.current.startGame(!status);
               }}
             >
-              <span>{status ? 'Stop' : 'Start'}</span>
+              <span>{status ? "Stop" : "Start"}</span>
             </button>
             <img src={cellImgSrc} alt="" id="cell-img-src" />
             <div>
-              Faces:{' '}
+              Faces:{" "}
               <input
                 value={faceNum}
                 type="number"
